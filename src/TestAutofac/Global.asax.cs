@@ -35,8 +35,9 @@ namespace TestAutofac
             var builder = new ContainerBuilder();
 
             // Register services
-            builder.RegisterType<TaskExecutor>().As<IBeforeRequestTask>().InstancePerDependency();
-            builder.RegisterType<TaskExecutor>().As<IAfterRequestTask>().InstancePerDependency();
+            //builder.RegisterType<TaskExecutor>().As<IBeforeRequestTask>().InstancePerDependency();
+            //builder.RegisterType<TaskExecutor>().As<IAfterRequestTask>().InstancePerDependency();
+            builder.RegisterType<TaskExecutor>().As<IBeforeRequestTask>().As<IAfterRequestTask>().SingleInstance();
 
             IContainer container = builder.Build();
 
