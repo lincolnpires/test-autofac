@@ -8,6 +8,8 @@ namespace TestAutofac
 {
     public class MvcApplication : HttpApplication
     {
+        internal static IContainer Container;
+
         protected void Application_Start()
         {
             this.SetDependencyResolver();
@@ -25,8 +27,7 @@ namespace TestAutofac
 
         public void Application_EndRequest()
         {
-            var service = DependencyResolver.Current.GetService<IAfterRequestTask>();
-
+            var service = MvcApplication.Container.Resolve<IAfterRequestTask>();
             service.Execute();
         }
 
@@ -34,15 +35,15 @@ namespace TestAutofac
         {
             var builder = new ContainerBuilder();
 
-            // Register services
-            //builder.RegisterType<TaskExecutor>().As<IBeforeRequestTask>().InstancePerDependency();
-            //builder.RegisterType<TaskExecutor>().As<IAfterRequestTask>().InstancePerDependency();
-            builder.RegisterType<TaskExecutor>().As<IBeforeRequestTask>().As<IAfterRequestTask>().SingleInstance();
+            builder.RegisterType<TaskExecutor>()
+                .As<IBeforeRequestTask>()
+                .As<IAfterRequestTask>()
+                .SingleInstance();
 
-            IContainer container = builder.Build();
+            Container = builder.Build();
 
             // Set Resolver
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(Container));
         }
     }
 
